@@ -40,7 +40,7 @@ public class ServerThread extends Thread implements java.util.Observer
                 {
                     
                 }
-                if (obj instanceof Integer) 
+                if (obj instanceof Integer[]) 
                 {
                     
                 }

@@ -5,25 +5,34 @@ import javax.swing.*;
 
 public class SpaceShip extends Thread
 {
-    GameManager gamePanel;
-    int x = 0, y = 0;
-    int size = 70;
+    JPanel gamePanel;
+    public int x = 0, y = 0;
+    public int size = 70;
     boolean isAlive;
     public int shipLevel;
-    Image shipImage;
+    Image shipImage1;
+    Image shipImage2;
     
-    public SpaceShip(GameManager gamePanel)
+    public SpaceShip(JPanel gamePanel)
     {
         shipLevel = 1;
         isAlive = true;
         this.gamePanel = gamePanel;
-        shipImage = (new ImageIcon("SpaceShip.png")).getImage();
+        shipImage1 = (new ImageIcon("SpaceShip.png")).getImage();
+        shipImage2 = (new ImageIcon("SpaceShip2.png")).getImage();
         start();
     }
     
-    public void drawShip(Graphics g)
+    public void drawShip(int skin, Graphics g)
     {
-        g.drawImage(shipImage, x, y, size,size,null);
+        if (skin == 1) 
+        {
+            g.drawImage(shipImage1, x, y, size,size,null);
+        }
+        else if(skin == 2)
+        {
+            g.drawImage(shipImage2, x, y, size,size,null);
+        }
     }
     
     public void fireProjectile()

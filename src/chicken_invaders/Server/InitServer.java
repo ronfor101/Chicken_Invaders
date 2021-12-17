@@ -28,7 +28,7 @@ public class InitServer extends java.util.Observable
             for (int i = 0; ;i++) 
             {
                 java.net.Socket socket = serverSocket.accept();
-                //update("A new client: " + i);
+                update("A new client: " + i);
                 ServerThread clientThread = new ServerThread(this, i, socket);
                 addObserver(clientThread);
                 clientThread.start(); 

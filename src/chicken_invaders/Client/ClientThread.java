@@ -21,7 +21,7 @@ public class ClientThread extends Thread
                 {
                     if (obj instanceof Integer)
                     {
-                        
+                        System.out.println(obj);
                     }
                     if (obj instanceof String)
                     {

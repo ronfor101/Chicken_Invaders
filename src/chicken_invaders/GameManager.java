@@ -89,7 +89,7 @@ public class GameManager extends JPanel
             //Draws The Ship
             if (ship.isAlive) 
             {
-                ship.drawShip(g);
+                ship.drawShip(1,g);
             }
             
             //Draws The Invaders Projectiles
