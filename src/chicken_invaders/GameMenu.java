@@ -50,7 +50,7 @@ public class GameMenu extends JPanel
         add(multiButton);
         multiButton.addActionListener((ActionEvent e) ->
         {
-            mainFrame.switchPanel(1);
+            mainFrame.switchPanel(2);
         });
     }
     

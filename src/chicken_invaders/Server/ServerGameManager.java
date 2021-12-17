@@ -1,14 +1,20 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package chicken_invaders.Server;
 
-/**
- *
- * @author ronfo
- */
-public class ServerGameManager {
+
+public class ServerGameManager extends Thread
+{
+    public ServerGameManager()
+    {
+        
+    }
     
+    public void play()
+    {
+        
+    }
+    
+    public void run()
+    {
+        
+    }
 }

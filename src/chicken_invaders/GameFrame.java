@@ -1,5 +1,6 @@
 package chicken_invaders;
 
+import chicken_invaders.Client.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -57,6 +58,11 @@ public class GameFrame extends JFrame
             add(gamePanel);
             hideMouseCursor();
             mouseStartingPosition();
+        }
+        else if(players == 2)
+        {
+            ClientGamePanel clientPanel = new ClientGamePanel();
+            add(clientPanel);
         }
         
         revalidate();
