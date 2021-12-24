@@ -1,5 +1,8 @@
 package chicken_invaders.Server;
 
+import chicken_invaders.SpaceShip;
+import java.util.ArrayList;
+
 
 public class ServerThread extends Thread implements java.util.Observer
 {
@@ -22,27 +25,43 @@ public class ServerThread extends Thread implements java.util.Observer
         {
             in = new java.io.ObjectInputStream(socket.getInputStream());
             out = new java.io.ObjectOutputStream(socket.getOutputStream());
-            
-            if (index < 2) 
-            {
-                out.writeObject(new Integer(1));
-            }
-            else
-            {
-                out.writeObject(new Integer(2));
-            }
+            out.writeObject(index);
+//            if (index < 2) 
+//            {
+//                out.writeObject(new Integer(1));
+//            }
+//            else
+//            {
+//                out.writeObject(new Integer(2));
+//            }
             
             out.flush();
             Object obj;
             while ((obj = in.readObject()) != null) 
             {
+                if (obj instanceof Integer) 
+                {
+                    System.out.println((int)obj);
+                }
                 if (obj instanceof String) 
                 {
+                    System.out.println((String)obj);
                     
-                }
-                if (obj instanceof Integer[]) 
-                {
+                    String temp = (String)obj;
+                    String[] tempA = temp.split(",", 3);
                     
+                    if (tempA[2] == "0") 
+                    {
+                        server.game.ship1Cords[0] = Integer.parseInt(tempA[0]);
+                        server.game.ship1Cords[1] = Integer.parseInt(tempA[1]);
+                    }
+                    else if (tempA[2] == "1")
+                    {
+                        server.game.ship2Cords[0] = Integer.parseInt(tempA[0]);
+                        server.game.ship2Cords[1] = Integer.parseInt(tempA[1]);
+                    }
+                    
+                    server.update(temp);
                 }
             }
         }

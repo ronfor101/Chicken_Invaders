@@ -18,9 +18,10 @@ public class ClientGamePanel extends JPanel
     int width;
     int height;
     Image backgroundImage;
+    
+    int index;
     SpaceShip ship1;
-    int[] ship1Loc;
-    SpaceShip ship2;
+    int[] ship2Cords = new int[3];
     
     ClientThread clientThread;
     
@@ -29,6 +30,8 @@ public class ClientGamePanel extends JPanel
         width = 1024;
         height = 700;
         ship1 = new SpaceShip(this);
+        ship2Cords[0] = -100;
+        ship2Cords[1] = -100;
         backgroundImage = (new ImageIcon("Background.jpg")).getImage();
         
         addMouseMotionListener(new MouseMovement());
@@ -44,10 +47,18 @@ public class ClientGamePanel extends JPanel
     {
 	super.paintComponent(g);
         g.drawImage(backgroundImage,0,0,getWidth(),getHeight(),null);
-        //ship1Loc[0] = ship1.x;
-        //ship1Loc[1] = ship1.y;
-        //send(ship1Loc);
+        g.drawImage(ship1.shipImage2,ship2Cords[0],ship2Cords[1],70,70,null);
+        try 
+        {
+            send(ship1.x + "," + ship1.y + "," + index);
+        }
+        catch (Exception e) 
+        {
+            System.out.println("Error: " + e.getMessage());
+        }
+        
         ship1.drawShip(1,g);
+        
     }
     
     public void Connect()

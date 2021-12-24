@@ -11,6 +11,8 @@ package chicken_invaders.Server;
  */
 public class InitServer extends java.util.Observable
 {
+    public ServerGameManager game = new ServerGameManager(this);
+    
     public static void main(String[] args) 
     {
         int port = 25565;
@@ -25,7 +27,7 @@ public class InitServer extends java.util.Observable
         {
             System.out.println("The Server is ready...");
             serverSocket = new java.net.ServerSocket(port);
-            for (int i = 0; ;i++) 
+            for (int i = 0; i < 2 ;i++) 
             {
                 java.net.Socket socket = serverSocket.accept();
                 update("A new client: " + i);

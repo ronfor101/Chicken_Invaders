@@ -21,11 +21,19 @@ public class ClientThread extends Thread
                 {
                     if (obj instanceof Integer)
                     {
-                        System.out.println(obj);
+                        clientPanel.index = (int)obj;
                     }
                     if (obj instanceof String)
                     {
+                        System.out.println("got " + (String)obj);
+                        String temp = (String)obj;
+                        String[] tempA = temp.split(",", 3);
                         
+                        if (Integer.parseInt(tempA[2]) != clientPanel.index) 
+                        {
+                            clientPanel.ship2Cords[0] = Integer.parseInt(tempA[0]);
+                            clientPanel.ship2Cords[1] = Integer.parseInt(tempA[1]);
+                        }
                     }
                     if (obj instanceof Boolean)
                     {

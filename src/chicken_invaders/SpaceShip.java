@@ -11,7 +11,7 @@ public class SpaceShip extends Thread
     boolean isAlive;
     public int shipLevel;
     Image shipImage1;
-    Image shipImage2;
+    public Image shipImage2;
     
     public SpaceShip(JPanel gamePanel)
     {
