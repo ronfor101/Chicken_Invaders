@@ -1,5 +1,7 @@
 package chicken_invaders.Client;
 
+import chicken_invaders.GameData;
+
 
 public class ClientThread extends Thread
 {
@@ -22,22 +24,12 @@ public class ClientThread extends Thread
                     if (obj instanceof Integer)
                     {
                         clientPanel.index = (int)obj;
+                        System.out.println(clientPanel.index);
                     }
-                    if (obj instanceof String)
+                    if (obj instanceof GameData)
                     {
-                        System.out.println("got " + (String)obj);
-                        String temp = (String)obj;
-                        String[] tempA = temp.split(",", 3);
-                        
-                        if (Integer.parseInt(tempA[2]) != clientPanel.index) 
-                        {
-                            clientPanel.ship2Cords[0] = Integer.parseInt(tempA[0]);
-                            clientPanel.ship2Cords[1] = Integer.parseInt(tempA[1]);
-                        }
-                    }
-                    if (obj instanceof Boolean)
-                    {
-                        
+                        clientPanel.tempData = (GameData)obj;
+                        //System.out.println(clientPanel.tempData.toString());
                     }
                 }
             } 

@@ -1,5 +1,6 @@
 package chicken_invaders.Server;
 
+import chicken_invaders.GameData;
 import chicken_invaders.SpaceShip;
 import java.util.ArrayList;
 
@@ -11,6 +12,8 @@ public class ServerThread extends Thread implements java.util.Observer
     private java.net.Socket socket;
     private java.io.ObjectInputStream in;
     private java.io.ObjectOutputStream out;
+    
+    GameData tempData;
     
     public ServerThread(InitServer server, int index, java.net.Socket socket) 
     {
@@ -26,14 +29,6 @@ public class ServerThread extends Thread implements java.util.Observer
             in = new java.io.ObjectInputStream(socket.getInputStream());
             out = new java.io.ObjectOutputStream(socket.getOutputStream());
             out.writeObject(index);
-//            if (index < 2) 
-//            {
-//                out.writeObject(new Integer(1));
-//            }
-//            else
-//            {
-//                out.writeObject(new Integer(2));
-//            }
             
             out.flush();
             Object obj;
@@ -43,25 +38,11 @@ public class ServerThread extends Thread implements java.util.Observer
                 {
                     System.out.println((int)obj);
                 }
-                if (obj instanceof String) 
+                if (obj instanceof GameData) 
                 {
-                    System.out.println((String)obj);
-                    
-                    String temp = (String)obj;
-                    String[] tempA = temp.split(",", 3);
-                    
-                    if (tempA[2] == "0") 
-                    {
-                        server.game.ship1Cords[0] = Integer.parseInt(tempA[0]);
-                        server.game.ship1Cords[1] = Integer.parseInt(tempA[1]);
-                    }
-                    else if (tempA[2] == "1")
-                    {
-                        server.game.ship2Cords[0] = Integer.parseInt(tempA[0]);
-                        server.game.ship2Cords[1] = Integer.parseInt(tempA[1]);
-                    }
-                    
-                    server.update(temp);
+                    tempData = (GameData)obj;
+                    System.out.println(tempData.toString());
+                    server.update(tempData);
                 }
             }
         }

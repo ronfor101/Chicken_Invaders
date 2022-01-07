@@ -1,5 +1,6 @@
 package chicken_invaders.Client;
 
+import chicken_invaders.GameData;
 import chicken_invaders.SpaceShip;
 import java.awt.*;
 import java.awt.event.*;
@@ -18,10 +19,13 @@ public class ClientGamePanel extends JPanel
     int width;
     int height;
     Image backgroundImage;
+    Image ship2;
     
     int index;
     SpaceShip ship1;
-    int[] ship2Cords = new int[3];
+    GameData tempData;
+    int ship2X = -100;
+    int ship2Y = -100;
     
     ClientThread clientThread;
     
@@ -30,8 +34,7 @@ public class ClientGamePanel extends JPanel
         width = 1024;
         height = 700;
         ship1 = new SpaceShip(this);
-        ship2Cords[0] = -100;
-        ship2Cords[1] = -100;
+        ship2 = (new ImageIcon("SpaceShip2.png")).getImage();
         backgroundImage = (new ImageIcon("Background.jpg")).getImage();
         
         addMouseMotionListener(new MouseMovement());
@@ -47,16 +50,16 @@ public class ClientGamePanel extends JPanel
     {
 	super.paintComponent(g);
         g.drawImage(backgroundImage,0,0,getWidth(),getHeight(),null);
-        g.drawImage(ship1.shipImage2,ship2Cords[0],ship2Cords[1],70,70,null);
-        try 
+        if(tempData != null && tempData.state == 0)
         {
-            send(ship1.x + "," + ship1.y + "," + index);
+            if (tempData.playerIndex != index) 
+            {
+                System.out.println(tempData.toString());
+                ship2X = tempData.shipX;
+                ship2Y = tempData.shipY;
+            }
         }
-        catch (Exception e) 
-        {
-            System.out.println("Error: " + e.getMessage());
-        }
-        
+        g.drawImage(ship2,ship2X,ship2Y,ship1.size,ship1.size,null);
         ship1.drawShip(1,g);
         
     }
@@ -65,7 +68,7 @@ public class ClientGamePanel extends JPanel
     {
         try 
         {
-            //this.socket = new java.net.Socket(java.net.InetAddress.getByName("79.183.186.221"), PORT);
+            //this.socket = new java.net.Socket(java.net.InetAddress.getByName("10.30.56.93"), PORT);
             this.socket = new java.net.Socket("localhost", PORT);
             this.objectOutputStream = new java.io.ObjectOutputStream(this.socket.getOutputStream());
             this.objectInputStream = new java.io.ObjectInputStream(this.socket.getInputStream());
@@ -136,6 +139,7 @@ public class ClientGamePanel extends JPanel
             {
                 ship1.y = height - 125;
             }
+            send(new GameData(index,ship1.x,ship1.y));
         }
         public void mouseDragged(MouseEvent e) 
         {
@@ -149,6 +153,7 @@ public class ClientGamePanel extends JPanel
             {
                 ship1.y = height - 125;
             }
+            send(new GameData(index,ship1.x,ship1.y));
         }
     }
 }
