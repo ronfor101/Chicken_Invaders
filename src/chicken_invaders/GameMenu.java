@@ -60,24 +60,4 @@ public class GameMenu extends JPanel
         g.drawImage(backgroundImage,0,0,getWidth(),getHeight(),null);
         g.drawImage(logo, 20, 40, 1000, 500, null);
     }
-    
-//    public static void initGameMenu()
-//    {
-//        JFrame f = new JFrame("Chicken Invaders");
-//        GameMenu gameMenu = new GameMenu();
-//        GameManager gamePanel = new GameManager();
-//        f.add(gameMenu);
-//        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        f.setSize(gameMenu.width,gameMenu.height);
-//        //f.setExtendedState(JFrame.MAXIMIZED_BOTH);
-//        //f.setUndecorated(true);
-//        f.setResizable(false);
-//        f.setVisible(true);	
-//        f.setFocusable(false);
-//    }
-//    
-//    public static void main(String[] args)
-//    {
-//        initGameMenu();
-//    }
 }

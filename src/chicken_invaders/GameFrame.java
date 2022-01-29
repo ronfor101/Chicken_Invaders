@@ -13,16 +13,21 @@ public class GameFrame extends JFrame
     GameManager gamePanel;
     public GameFrame()
     {
-        setTitle("Shiken Pooper By Ron");
         gameMenu = new GameMenu(this);
-        add(gameMenu);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setTitle("Shiken Pooper By Ron");
+        //setLayout(null);
         setSize(gameMenu.width,gameMenu.height);
-        //f.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        //f.setUndecorated(true);
         setResizable(false);
         setVisible(true);	
         setFocusable(false);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        add(gameMenu);
+        //gameMenu.setBounds(0, 0, gameMenu.width, gameMenu.height);
+        
+        
+        //f.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        //f.setUndecorated(true);
+        
     }
     
     public void hideMouseCursor()
@@ -54,15 +59,15 @@ public class GameFrame extends JFrame
         
         if (players == 1) 
         {
-            gamePanel = new GameManager(this);
+            gamePanel = new GameManager(this, false);
             add(gamePanel);
             hideMouseCursor();
             mouseStartingPosition();
         }
         else if(players == 2)
         {
-            ClientGamePanel clientPanel = new ClientGamePanel();
-            add(clientPanel);
+            gamePanel = new GameManager(this, true);
+            add(gamePanel);
         }
         
         revalidate();

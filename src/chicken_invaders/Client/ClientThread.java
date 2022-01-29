@@ -1,11 +1,13 @@
 package chicken_invaders.Client;
 
+import chicken_invaders.GameManager;
+
 
 public class ClientThread extends Thread
 {
-    ClientGamePanel clientPanel;
+    GameManager clientPanel;
     
-    public ClientThread(ClientGamePanel clientPanel)
+    public ClientThread(GameManager clientPanel)
     {
         this.clientPanel = clientPanel;
     }

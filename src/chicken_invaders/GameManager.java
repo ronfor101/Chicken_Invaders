@@ -1,5 +1,6 @@
 package chicken_invaders;
 
+import chicken_invaders.Client.ClientThread;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -8,6 +9,15 @@ import javax.swing.*;
 
 public class GameManager extends JPanel
 {
+    //multiplayer
+    final int PORT = 25565;
+    java.net.Socket socket;
+    public java.io.ObjectOutputStream objectOutputStream;
+    public java.io.ObjectInputStream objectInputStream;
+    
+    ClientThread clientThread;
+    
+    //single player
     boolean gameActive;
     int gameScore;
     GameManager gamePanel = this;
@@ -22,8 +32,15 @@ public class GameManager extends JPanel
     int width;
     int height;
     
-    public GameManager(GameFrame frame)
+    public GameManager(GameFrame frame, boolean mpState)
     {
+        if (mpState) 
+        {
+            this.clientThread = new ClientThread(this);
+            this.Connect();
+            this.clientThread.start();
+        }
+        //init game panel
         mainFrame = frame;
         gameActive = true;
         gameScore = 0;
@@ -36,8 +53,13 @@ public class GameManager extends JPanel
         invadersProjectiles = new ArrayList<InvaderProjectile>();
         upgradeDrops = new ArrayList<UpgradeDrop>();
         
-        spawnInvaders();
+        if (!mpState) 
+        {
+            //spawn the invaders
+            spawnInvaders();
+        }
         
+        //mouse listener for movment and clicks
         addMouseMotionListener(new MouseMovement());
         addMouseListener(new MouseAdapter() 
         { 
@@ -322,24 +344,32 @@ public class GameManager extends JPanel
         catch (Exception e) {}
     }
     
-//    public static void initializeFrame()
-//    {
-//        JFrame f = new JFrame("Chicken Invaders");
-//        GameManager gamePanel = new GameManager();
-//        f.add(gamePanel);
-//        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        f.setSize(gamePanel.width,gamePanel.height);
-//        //f.setExtendedState(JFrame.MAXIMIZED_BOTH);
-//        //f.setUndecorated(true);
-//        f.setResizable(false);
-//        f.setVisible(true);	
-//        f.setFocusable(false);
-//        gamePanel.hideMouseCursor();
-//        mouseStartingPosition();
-//    }
-//    
-//    public static void main(String[] args)
-//    {
-//        initializeFrame();
-//    }
+    //Multiplayer Functions
+    public void Connect()
+    {
+        try 
+        {
+            //this.socket = new java.net.Socket(java.net.InetAddress.getByName("79.183.186.221"), PORT);
+            this.socket = new java.net.Socket("localhost", PORT);
+            this.objectOutputStream = new java.io.ObjectOutputStream(this.socket.getOutputStream());
+            this.objectInputStream = new java.io.ObjectInputStream(this.socket.getInputStream());
+        }
+        catch (java.io.IOException ex) 
+        { 
+            System.out.println("Somthing went wrong, Could not connect :( ");
+        }
+    }
+    
+    public void send(Object obj) 
+    {
+        try 
+        {
+            this.objectOutputStream.writeObject(obj);
+            this.objectOutputStream.flush();
+        }
+        catch (java.io.IOException ex) 
+        {
+            System.out.println("Somthing went wrong, Could not send information :( ");
+        }
+    }
 }
