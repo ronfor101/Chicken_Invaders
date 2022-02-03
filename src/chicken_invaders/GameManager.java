@@ -4,7 +4,10 @@ import chicken_invaders.Client.ClientThread;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 
 public class GameManager extends JPanel
@@ -19,9 +22,9 @@ public class GameManager extends JPanel
     
     //single player
     boolean gameActive;
-    int gameScore;
+    public int gameScore;
     GameManager gamePanel = this;
-    SpaceShip ship;
+    public SpaceShip ship;
     Image backgroundImage;
     GameFrame mainFrame;
     ArrayList<ShipProjectile> projectiles;
@@ -103,7 +106,7 @@ public class GameManager extends JPanel
         g.drawImage(backgroundImage,0,0,getWidth(),getHeight(),null);
         g.setColor(Color.white);
         g.setFont(new Font("Arial", 1, 25));
-        g.drawString("Score: " + gameScore, 25, 25);
+        //g.drawString("Score: " + gameScore, 25, 25);
         
         if (gameActive) 
         {
@@ -139,6 +142,7 @@ public class GameManager extends JPanel
                 else
                 {
                     temp.spawnUpgrade();
+                    
                     invaders.remove(temp);
                 }
             }
@@ -197,7 +201,6 @@ public class GameManager extends JPanel
                 showMouseCursor();
                 g.drawString("Game Over!", 230, height / 2);
             }
-            
         }
     }
     

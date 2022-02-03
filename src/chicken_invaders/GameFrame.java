@@ -11,36 +11,33 @@ public class GameFrame extends JFrame
 {
     GameMenu gameMenu;
     GameManager gamePanel;
+    JPanel container;
+    GameInfo gameInfo;
     public GameFrame()
     {
         gameMenu = new GameMenu(this);
-        setTitle("Shiken Pooper By Ron");
-        //setLayout(null);
-        setSize(gameMenu.width,gameMenu.height);
+        gameMenu.setBounds(0, 0, 1024, 700);
+        
+        //Container for all of the panels
+        container = new JPanel();
+        container.setBackground(Color.red);
+        container.setLayout(null);
+        container.setSize(1024, 700);
+        container.add(gameMenu);
+        
+        setTitle("Chicken Invaders By Ron");
+        
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(null);
+        setSize(1024, 700);
         setResizable(false);
         setVisible(true);	
         setFocusable(false);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        add(gameMenu);
-        //gameMenu.setBounds(0, 0, gameMenu.width, gameMenu.height);
         
+        add(container);
         
         //f.setExtendedState(JFrame.MAXIMIZED_BOTH);
         //f.setUndecorated(true);
-        
-    }
-    
-    public void hideMouseCursor()
-    {
-        BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-	Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
-	cursorImg, new Point(0, 0), "blank cursor");
-	setCursor(blankCursor);	
-    }
-    
-    public void showMouseCursor()
-    {
-        setCursor(Cursor.getDefaultCursor());
     }
     
     public static void mouseStartingPosition()
@@ -55,22 +52,30 @@ public class GameFrame extends JFrame
     
     public void switchPanel(int players)
     {
-        getContentPane().removeAll();
+        container.removeAll();
         
         if (players == 1) 
         {
             gamePanel = new GameManager(this, false);
-            add(gamePanel);
-            hideMouseCursor();
-            mouseStartingPosition();
+            gamePanel.setBounds(0, 0, 1024, 700);
+            container.add(gamePanel);
+            
+            gamePanel.hideMouseCursor();
+            gamePanel.mouseStartingPosition();
         }
         else if(players == 2)
         {
+            setSize(1536, 700);
             gamePanel = new GameManager(this, true);
-            add(gamePanel);
+            gamePanel.setBounds(0, 0, 1024, 700);
+            container.add(gamePanel);
+            
+            gameInfo = new GameInfo(gamePanel);
+            gameInfo.setBounds(1024, 0, 512, 700);
+            add(gameInfo);
         }
         
-        revalidate();
+        container.revalidate();
     }
     
     public static void main(String[] args)

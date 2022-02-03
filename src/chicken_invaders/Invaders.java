@@ -42,20 +42,19 @@ public class Invaders extends Thread
     
     public void run()
     {
-        while(true)
+        while(isAlive)
         {
             try
             {
+                if (rnd.nextInt(5000) == 555) 
+                {
+                    gamePanel.invadersProjectiles.add(new InvaderProjectile(gamePanel, x, y));
+                }
+            
+                gamePanel.repaint();
                 Thread.sleep(10);
             }
             catch (InterruptedException e) {}
-            
-            if (rnd.nextInt(5000) == 555 && isAlive) 
-            {
-                gamePanel.invadersProjectiles.add(new InvaderProjectile(gamePanel, x, y));
-            }
-            
-            gamePanel.repaint();
         }
     }
 }
