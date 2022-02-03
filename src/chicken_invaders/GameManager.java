@@ -185,10 +185,18 @@ public class GameManager extends JPanel
             g.setColor(Color.white);
             g.setFont(new Font("Arial", 1, 100));
             
+            for (int i = 0; i < invaders.size(); i++) 
+            {
+                invaders.get(i).isAlive = false;
+            }
+            
             projectiles.clear();
             invadersProjectiles.clear();
             invaders.clear();
             upgradeDrops.clear();
+            
+            
+            
             ship.shipLevel = 1;
             
             if (ship.isAlive) 
