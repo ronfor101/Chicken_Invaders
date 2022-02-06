@@ -25,19 +25,7 @@ public class ServerThread extends Thread implements java.util.Observer
         {
             in = new java.io.ObjectInputStream(socket.getInputStream());
             out = new java.io.ObjectOutputStream(socket.getOutputStream());
-            
-            if (index < 1) 
-            {
-                out.writeObject(new Integer(1));
-            }
-            else if (index < 2) 
-            {
-                out.writeObject(new Integer(2));
-            }
-            else
-            {
-                out.writeObject(new Integer(3));
-            }
+            out.writeObject(new Integer(index));
             
             out.flush();
             Object obj;
@@ -47,6 +35,7 @@ public class ServerThread extends Thread implements java.util.Observer
                 {
                     Data temp = (Data)obj;
                     server.update(temp);
+                    System.out.println("Got" + temp.toString());
                 }
             }
         }

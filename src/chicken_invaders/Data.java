@@ -20,4 +20,9 @@ public class Data implements Serializable
         this.screen = gm.gameScreen;
         this.score = gm.gameScore;
     }
+    
+    public String toString()
+    {
+        return (state + " : " + player + " : " + score);
+    }
 }
