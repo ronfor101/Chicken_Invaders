@@ -20,7 +20,6 @@ public class GameFrame extends JFrame
         
         //Container for all of the panels
         container = new JPanel();
-        container.setBackground(Color.red);
         container.setLayout(null);
         container.setSize(1024, 700);
         container.add(gameMenu);

@@ -19,6 +19,9 @@ public class GameManager extends JPanel
     public java.io.ObjectInputStream objectInputStream;
     
     ClientThread clientThread;
+    public BufferedImage gameScreen;
+    public Data enemyData;
+    public int player;
     
     //single player
     boolean gameActive;
@@ -39,10 +42,13 @@ public class GameManager extends JPanel
     {
         if (mpState) 
         {
+            enemyData = new Data(this,0);
+            player = 0;
             this.clientThread = new ClientThread(this);
             this.Connect();
             this.clientThread.start();
         }
+        
         //init game panel
         mainFrame = frame;
         gameActive = true;
@@ -210,6 +216,8 @@ public class GameManager extends JPanel
                 g.drawString("Game Over!", 230, height / 2);
             }
         }
+        screenShot();
+        send(new Data(this, 1));
     }
     
     public void hideMouseCursor()
@@ -380,7 +388,17 @@ public class GameManager extends JPanel
         }
         catch (java.io.IOException ex) 
         {
-            System.out.println("Somthing went wrong, Could not send information :( ");
+            //System.out.println("Somthing went wrong, Could not send information :( ");
         }
+    }
+    
+    public void screenShot() {
+        try {
+            Point p = getLocationOnScreen();
+            Dimension dim = new Dimension(1024, 700);
+            Rectangle rect = new Rectangle(p, dim);
+            gameScreen = (new Robot()).createScreenCapture(rect);
+        }
+        catch (Exception e) { }
     }
 }

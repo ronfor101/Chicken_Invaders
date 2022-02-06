@@ -1,5 +1,8 @@
 package chicken_invaders.Server;
 
+import chicken_invaders.Data;
+import java.awt.image.BufferedImage;
+
 
 public class ServerThread extends Thread implements java.util.Observer
 {
@@ -23,26 +26,27 @@ public class ServerThread extends Thread implements java.util.Observer
             in = new java.io.ObjectInputStream(socket.getInputStream());
             out = new java.io.ObjectOutputStream(socket.getOutputStream());
             
-            if (index < 2) 
+            if (index < 1) 
             {
                 out.writeObject(new Integer(1));
             }
-            else
+            else if (index < 2) 
             {
                 out.writeObject(new Integer(2));
+            }
+            else
+            {
+                out.writeObject(new Integer(3));
             }
             
             out.flush();
             Object obj;
             while ((obj = in.readObject()) != null) 
             {
-                if (obj instanceof String) 
+                if (obj instanceof Data) 
                 {
-                    
-                }
-                if (obj instanceof Integer) 
-                {
-                    
+                    Data temp = (Data)obj;
+                    server.update(temp);
                 }
             }
         }

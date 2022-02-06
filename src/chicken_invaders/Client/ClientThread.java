@@ -1,5 +1,6 @@
 package chicken_invaders.Client;
 
+import chicken_invaders.Data;
 import chicken_invaders.GameManager;
 
 
@@ -21,17 +22,14 @@ public class ClientThread extends Thread
                 Object obj;
                 while ((obj = clientPanel.objectInputStream.readObject()) != null) 
                 {
+                    if (obj instanceof Data)
+                    {
+                        clientPanel.enemyData = (Data) obj;
+                    }
                     if (obj instanceof Integer)
                     {
-                        
-                    }
-                    if (obj instanceof String)
-                    {
-                        
-                    }
-                    if (obj instanceof Boolean)
-                    {
-                        
+                        clientPanel.player = (Integer)obj;
+                        System.out.println(clientPanel.player);
                     }
                 }
             } 
