@@ -388,7 +388,7 @@ public class GameManager extends JPanel
         }
         catch (java.io.IOException ex) 
         {
-            //System.out.println("Somthing went wrong, Could not send information :( ");
+            System.out.println("Somthing went wrong, Could not send information :( ");
         }
     }
     
