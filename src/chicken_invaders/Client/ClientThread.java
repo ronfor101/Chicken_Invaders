@@ -25,12 +25,12 @@ public class ClientThread extends Thread
                     if (obj instanceof Data)
                     {
                         clientPanel.enemyData = (Data) obj;
-                        System.out.println(clientPanel.enemyData.toString());
+                        //System.out.println(clientPanel.enemyData.toString());
                     }
                     if (obj instanceof Integer)
                     {
                         clientPanel.player = (Integer)obj;
-                        System.out.println(clientPanel.player);
+                        //System.out.println(clientPanel.player);
                     }
                 }
             } 

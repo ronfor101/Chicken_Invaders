@@ -7,7 +7,6 @@ public class InitServer extends java.util.Observable {
     }
 
     public void handleClients(int port) {
-        // game.start();
         java.net.ServerSocket serverSocket = null;
         try {
             System.out.println("The Server is ready...");

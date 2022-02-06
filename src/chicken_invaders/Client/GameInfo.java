@@ -15,7 +15,7 @@ public class GameInfo extends JPanel
     GameManager game;
     int width;
     int height;
-    public BufferedImage enemyScreen;
+    public Image enemyScreen;
     
     public GameInfo(GameManager game)
     {
@@ -31,7 +31,7 @@ public class GameInfo extends JPanel
     {
         if (game.enemyData.player != game.player) 
         {
-            enemyScreen = game.enemyData.screen;
+            enemyScreen = game.enemyData.screen.getImage();
         }
     }
     
