@@ -12,7 +12,7 @@ import javax.swing.*;
 
 public class GameManager extends JPanel
 {
-    //multiplayer
+    //////////////////////////multiplayer//////////////////////////
     final int PORT = 25565;
     java.net.Socket socket;
     public java.io.ObjectOutputStream objectOutputStream;
@@ -22,24 +22,35 @@ public class GameManager extends JPanel
     public BufferedImage gameScreen;
     public Data enemyData;
     public int player;
+    ///////////////////////////////////////////////////////////////
     
-    //single player
+    //////////////////////////single player//////////////////////////
     boolean gameActive;
     public int gameScore;
     GameManager gamePanel = this;
     public SpaceShip ship;
     Image backgroundImage;
-    GameFrame mainFrame;
+    static GameFrame mainFrame;
+    
     ArrayList<ShipProjectile> projectiles;
     ArrayList<Invaders> invaders;
     ArrayList<InvaderProjectile> invadersProjectiles;
     ArrayList<UpgradeDrop> upgradeDrops;
-
+    
     int width;
     int height;
     
+    long waveTimeGathered;
+    long shipImmuTimeGathered;
+    boolean shipImmun;
+    boolean showWave;
+    int wave;
+    int lives;
+    ////////////////////////////////////////////////////////////////
+    
     public GameManager(GameFrame frame, boolean mpState)
     {
+        //If the game is multiplayer then connect to server
         if (mpState) 
         {
             enemyData = new Data(this,0);
@@ -61,12 +72,14 @@ public class GameManager extends JPanel
         invaders = new ArrayList<Invaders>();
         invadersProjectiles = new ArrayList<InvaderProjectile>();
         upgradeDrops = new ArrayList<UpgradeDrop>();
+        shipImmun = true;
+        shipImmuTimeGathered = System.currentTimeMillis();
+        showWave = true;
+        wave = 1;
+        waveTimeGathered = System.currentTimeMillis();
+        lives = 3;
         
-        if (!mpState) 
-        {
-            //spawn the invaders
-            spawnInvaders();
-        }
+        spawnInvaders();
         
         //mouse listener for movment and clicks
         addMouseMotionListener(new MouseMovement());
@@ -111,11 +124,12 @@ public class GameManager extends JPanel
 	super.paintComponent(g);
         g.drawImage(backgroundImage,0,0,getWidth(),getHeight(),null);
         g.setColor(Color.white);
-        g.setFont(new Font("Arial", 1, 25));
-        //g.drawString("Score: " + gameScore, 25, 25);
+        g.setFont(new Font("Arial", 1, 20));
         
-        if (gameActive) 
+        if (gameActive && !showWave) 
         {
+            g.drawString("Score: " + gameScore, 5, 20);
+            g.drawString("Health: " + lives, 5, 655);
             hit();
             //Draws The Ship
             if (ship.isAlive) 
@@ -181,12 +195,29 @@ public class GameManager extends JPanel
                 }
             }
             
+            if (shipImmun) 
+            {
+                if (cooldownOver(shipImmuTimeGathered, 2000)) 
+                {
+                    shipImmun = false;
+                }
+            }
+            
             if (invaders.size() == 0) 
             {
-                gameActive = false;
+                wave++;
+                showWave = true;
+                waveTimeGathered = System.currentTimeMillis();
+                
+                projectiles.clear();
+                invadersProjectiles.clear();
+                invaders.clear();
+                upgradeDrops.clear();
+                ship.shipLevel = 1;
+                spawnInvaders();
             }
         }
-        else
+        else if (!gameActive)
         {
             g.setColor(Color.white);
             g.setFont(new Font("Arial", 1, 100));
@@ -201,23 +232,28 @@ public class GameManager extends JPanel
             invaders.clear();
             upgradeDrops.clear();
             
-            
-            
             ship.shipLevel = 1;
+            lives = 3;
             
-            if (ship.isAlive) 
+            showMouseCursor();
+            g.drawString("Game Over!", 230, 150);
+            g.setFont(new Font("Arial", 1, 50));
+            g.drawString("Score: " + gameScore, 390, (height / 2) - 60);
+            g.setFont(new Font("Arial", 1, 25));
+            g.drawString("Click Left Mouse Button To Restart", 300, 650);
+        }
+        else if (showWave) 
+        {
+            g.setColor(Color.white);
+            g.setFont(new Font("Arial", 1, 100));
+            g.drawString("Wave " + wave, 330, height / 2);
+            
+            if (cooldownOver(waveTimeGathered, 2000)) 
             {
-                showMouseCursor();
-                g.drawString("You Won!", 280, height / 2);
-            }
-            else
-            {
-                showMouseCursor();
-                g.drawString("Game Over!", 230, height / 2);
+                showWave = false;
+                mouseStartingPosition();
             }
         }
-        screenShot();
-        send(new Data(this, 1));
     }
     
     public void hideMouseCursor()
@@ -285,8 +321,8 @@ public class GameManager extends JPanel
                         currentInv.isAlive = false;
                         gameScore += 50;
                     }
-                    
                     currentProj.isAlive = false;
+                    break;
                 }
             }
         }
@@ -295,10 +331,19 @@ public class GameManager extends JPanel
         for (int j = 0; j < invadersProjectiles.size(); j++) 
         {
             currentInvProj = invadersProjectiles.get(j);
-            if (ship.x < currentInvProj.x + currentInvProj.size && ship.x + ship.size > currentInvProj.x && ship.y < currentInvProj.y + currentInvProj.size + 5 && ship.size + ship.y > currentInvProj.y) 
+            if (!shipImmun && ship.x < currentInvProj.x + currentInvProj.size && ship.x + ship.size > currentInvProj.x && ship.y < currentInvProj.y + currentInvProj.size + 5 && ship.size + ship.y > currentInvProj.y) 
             {
-                ship.isAlive = false;
-                gameActive = false;
+                shipImmun = true;
+                shipImmuTimeGathered = System.currentTimeMillis();
+                currentInvProj.isAlive = false;
+                mouseStartingPosition();
+                lives--;
+                if (lives <= 0) 
+                {
+                    ship.isAlive = false;
+                    gameActive = false;
+                }
+                break;
             }
         }
         
@@ -313,6 +358,7 @@ public class GameManager extends JPanel
                     ship.shipLevel++;
                 }
                 currentDrop.isAlive = false;
+                break;
             }
         }
         
@@ -320,10 +366,18 @@ public class GameManager extends JPanel
         for (int j = 0; j < invaders.size(); j++) 
         {
             currentInv = invaders.get(j);
-            if (ship.x < currentInv.x + currentInv.size && ship.x + ship.size > currentInv.x && ship.y < currentInv.y + currentInv.size && ship.size + ship.y > currentInv.y) 
+            if (!shipImmun && ship.x < currentInv.x + currentInv.size && ship.x + ship.size > currentInv.x && ship.y < currentInv.y + currentInv.size && ship.size + ship.y > currentInv.y) 
             {
-                ship.isAlive = false;
-                gameActive = false;
+                shipImmun = true;
+                shipImmuTimeGathered = System.currentTimeMillis();
+                mouseStartingPosition();
+                lives--;
+                if (lives <= 0) 
+                {
+                    ship.isAlive = false;
+                    gameActive = false;
+                }
+                break;
             }
         }
     }
@@ -358,9 +412,20 @@ public class GameManager extends JPanel
         try 
         {
             Robot r = new Robot();
-            r.mouseMove(480, 500);
+            r.mouseMove(mainFrame.getX() + 480,mainFrame.getY() + 500);
         } 
         catch (Exception e) {}
+    }
+    
+    public boolean cooldownOver(long timeGathered, int coolDownTime)
+    {
+        long time = System.currentTimeMillis();
+        if (time > timeGathered + coolDownTime) 
+        {
+            timeGathered = time;
+            return true;
+        }
+        return false;
     }
     
     //Multiplayer Functions
