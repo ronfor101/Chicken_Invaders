@@ -18,7 +18,7 @@ public class UpgradeDrop extends Thread
         this.y = y + 35;
         this.gamePanel = gamePanel;
         isAlive = true;
-        upgradeImage = (new ImageIcon("Upgrade.png")).getImage();
+        upgradeImage = (new ImageIcon("Upgrade.gif")).getImage();
         start();
     }
     

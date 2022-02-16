@@ -29,27 +29,36 @@ public class GameManager extends JPanel
     ///////////////////////////////////////////////////////////////
     
     //////////////////////////single player//////////////////////////
+    
+    //game and panel components
     boolean gameActive;
     public int gameScore;
     GameManager gamePanel = this;
-    public SpaceShip ship;
     Image backgroundImage;
     static GameFrame mainFrame;
-    
-    ArrayList<ShipProjectile> projectiles;
-    ArrayList<Invaders> invaders;
-    ArrayList<InvaderProjectile> invadersProjectiles;
-    ArrayList<UpgradeDrop> upgradeDrops;
-    
     int width;
     int height;
     
-    long waveTimeGathered;
-    long shipImmuTimeGathered;
-    boolean shipImmun;
-    boolean showWave;
+    //ship components
+    public SpaceShip ship;
+    ArrayList<ShipProjectile> projectiles;
+    ArrayList<UpgradeDrop> upgradeDrops;
+    
+    //invaders components
+    long invMovementTimeGathered;
+    ArrayList<Invaders> invaders;
+    ArrayList<InvaderProjectile> invadersProjectiles;
+    
+    //wave components
     int wave;
+    boolean showWave;
+    long waveTimeGathered;
+    
+    //ship life and immunity components
     public int lives;
+    boolean shipImmun;
+    long shipImmuTimeGathered;
+    
     ////////////////////////////////////////////////////////////////
     
     public GameManager(GameFrame frame, boolean mpState)
@@ -76,17 +85,26 @@ public class GameManager extends JPanel
         width = 1024;
         height = 700;
         backgroundImage = (new ImageIcon("Background.jpg")).getImage();
+        
+        //ship info and components
         ship = new SpaceShip(this);
         projectiles = new ArrayList<ShipProjectile>();
+        upgradeDrops = new ArrayList<UpgradeDrop>();
+        
+        //invader info and components
         invaders = new ArrayList<Invaders>();
         invadersProjectiles = new ArrayList<InvaderProjectile>();
-        upgradeDrops = new ArrayList<UpgradeDrop>();
+        invMovementTimeGathered = System.currentTimeMillis();
+        
+        //Ship life and immunity
+        lives = 3;
         shipImmun = true;
         shipImmuTimeGathered = System.currentTimeMillis();
-        showWave = true;
+        
+        //Wave info and cooldown
         wave = 1;
+        showWave = true;
         waveTimeGathered = System.currentTimeMillis();
-        lives = 3;
         
         spawnInvaders();
         
@@ -126,14 +144,17 @@ public class GameManager extends JPanel
                             spawnInvaders();
                             mouseStartingPosition();
                             gameScore = 0;
-                            gameActive = true;
 
                             mpSentScore = false;
                             mpOppDead = false;
                             mpStart = false;
+                            wave = 1;
+                            lives = 3;
+                            ship.shipLevel = 1;
                             showWave = true;
                             waveTimeGathered = System.currentTimeMillis();
                             send("ready");
+                            gameActive = true;
                         }
                     }
                     else
@@ -143,6 +164,9 @@ public class GameManager extends JPanel
                         spawnInvaders();
                         mouseStartingPosition();
                         gameScore = 0;
+                        wave = 1;
+                        lives = 3;
+                        ship.shipLevel = 1;
                         gameActive = true;
                     }
                 }
@@ -162,11 +186,6 @@ public class GameManager extends JPanel
             g.drawString("Score: " + gameScore, 5, 20);
             g.drawString("Health: " + lives, 5, 655);
             hit();
-            //Draws The Ship
-            if (ship.isAlive) 
-            {
-                ship.drawShip(g);
-            }
             
             //Draws The Invaders Projectiles
             for (int i = 0; i < invadersProjectiles.size(); i++) 
@@ -226,6 +245,24 @@ public class GameManager extends JPanel
                 }
             }
             
+            //Draws The Ship
+            if (ship.isAlive) 
+            {
+                ship.drawShip(g);
+            }
+            
+            //move chickens side to side
+            if (cooldownOver(invMovementTimeGathered, 20)) 
+            {
+                for (int i = 0; i < invaders.size(); i++) 
+                {
+                    Invaders temp = invaders.get(i);
+                    temp.moveChicken();
+                }
+                invMovementTimeGathered = System.currentTimeMillis();
+            }
+            
+            //Check Ship Immunity cooldown (When to turn off the immunity)
             if (shipImmun) 
             {
                 if (cooldownOver(shipImmuTimeGathered, 2000)) 
@@ -234,6 +271,7 @@ public class GameManager extends JPanel
                 }
             }
             
+            //If all chickens are dead start another wave
             if (invaders.isEmpty()) 
             {
                 wave++;
@@ -262,9 +300,6 @@ public class GameManager extends JPanel
             invadersProjectiles.clear();
             invaders.clear();
             upgradeDrops.clear();
-            
-            ship.shipLevel = 1;
-            lives = 3;
             
             showMouseCursor();
             
@@ -393,11 +428,11 @@ public class GameManager extends JPanel
                 currentInv = invaders.get(j);
                 if (currentProj.x < currentInv.x + currentInv.size && currentProj.x + currentProj.size > currentInv.x && currentProj.y < currentInv.y + currentInv.size &&(currentProj.size + 40) + currentProj.y > currentInv.y) 
                 {
-                    currentInv.life--;
-                    if (currentInv.life <= 0) 
+                    currentInv.health--;
+                    if (currentInv.health <= 0) 
                     {
                         currentInv.isAlive = false;
-                        gameScore += 50;
+                        gameScore += (10 * wave);
                     }
                     currentProj.isAlive = false;
                     break;
@@ -466,21 +501,21 @@ public class GameManager extends JPanel
         int invY = 25;
         for (int i = 0; i < 8; i++) 
         {
-            invaders.add(new Invaders(this, invX, invY));
+            invaders.add(new Invaders(this, invX, invY, wave));
             invX += 100;
         }
         invX = 125;
         invY += 100;
         for (int i = 0; i < 8; i++) 
         {
-            invaders.add(new Invaders(this, invX, invY));
+            invaders.add(new Invaders(this, invX, invY, wave));
             invX += 100;
         }
         invX = 125;
         invY += 100;
         for (int i = 0; i < 8; i++) 
         {
-            invaders.add(new Invaders(this, invX, invY));
+            invaders.add(new Invaders(this, invX, invY, wave));
             invX += 100;
         }
     }

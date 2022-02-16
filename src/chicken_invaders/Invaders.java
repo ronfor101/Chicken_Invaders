@@ -7,29 +7,70 @@ import javax.swing.*;
 public class Invaders extends Thread
 {
     GameManager gamePanel;
+    boolean direction;
+    int leftLimit, rightLimit;
     int x, y;
     int size;
-    int life;
+    int health;
+    int wave;
     boolean isAlive;
     Random rnd;
-    Image invaderImage;
+    Image redInvImage; // 1 hp
+    Image blueInvImage; // 2 hp
+    Image greenInvImage; // 3 hp
+    Image yellowInvImage; // 4 hp
+    Image purpleInvImage; // 5 hp
+    Image blackInvImage; // 6 hp
+    Image shipInvUmage; // more then 6 hp
     
-    public Invaders(GameManager gamePanel, int x, int y)
+    public Invaders(GameManager gamePanel, int x, int y, int wave)
     {
-        life = 3;
+        direction = true;
+        health = wave;
         size = 70;
         this.x = x;
         this.y = y;
         this.gamePanel = gamePanel;
         isAlive = true;
         rnd = new Random();
-        invaderImage = (new ImageIcon("RedChicken.png")).getImage();
+        redInvImage = (new ImageIcon("RedChicken.png")).getImage();
+        blueInvImage = (new ImageIcon("BlueChicken.png")).getImage();
+        greenInvImage = (new ImageIcon("GreenChicken.png")).getImage();
+        yellowInvImage = (new ImageIcon("YellowChicken.png")).getImage();
+        purpleInvImage = (new ImageIcon("PurpleChicken.png")).getImage();
+        blackInvImage = (new ImageIcon("BlackChicken.png")).getImage();
+        shipInvUmage = (new ImageIcon("ShipChicken.gif")).getImage();
+        
+        leftLimit = this.x - 80;
+        rightLimit = this.x + 80;
+        
         start();
     }
     
+    public void moveChicken()
+    {
+        if (direction) 
+        {
+            x -= 2;
+        }
+        else
+        {
+            x += 2;
+        }
+        
+        if (this.x <= leftLimit) 
+        {
+            direction = false;
+        }
+        else if (this.x >= rightLimit)
+        {
+            direction = true;
+        }
+    }
+
     public void spawnUpgrade()
     {
-        if (rnd.nextInt(10) == 1) 
+        if (rnd.nextInt(20) == 1) 
         {
             gamePanel.upgradeDrops.add(new UpgradeDrop(gamePanel, x, y));
         }
@@ -37,7 +78,13 @@ public class Invaders extends Thread
     
     public void drawInvader(Graphics g)
     {
-        g.drawImage(invaderImage, x, y, size, size, null);
+        if (health == 1) {g.drawImage(redInvImage, x, y, size, size, null);}
+        else if(health == 2){g.drawImage(blueInvImage, x, y, size, size, null);}
+        else if(health == 3){g.drawImage(greenInvImage, x, y, size, size, null);}
+        else if(health == 4){g.drawImage(yellowInvImage, x, y, size, size, null);}
+        else if(health == 5){g.drawImage(purpleInvImage, x, y, size, size, null);}
+        else if(health == 6){g.drawImage(blackInvImage, x, y, size, size, null);}
+        else if(health > 6){g.drawImage(shipInvUmage, x, y, size, size, null);}
     }
     
     public void run()
