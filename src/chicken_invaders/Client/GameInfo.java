@@ -24,15 +24,15 @@ public class GameInfo extends JPanel
         height = 350;
         
         setBackground(Color.BLACK);
-        //enemyScreen = (new ImageIcon("placeholder.png")).getImage();
+        enemyScreen = (new ImageIcon("placeholder.png")).getImage();
     }
     
     private void isEnemyData()
     {
-        if (game.enemyData.player != game.player) 
-        {
-            enemyScreen = game.enemyData.screen.getImage();
-        }
+//        if (game.enemyData.player != game.player) 
+//        {
+//            enemyScreen = game.enemyData.screen.getImage();
+//        }
     }
     
     public void paintComponent(Graphics g)	
@@ -43,9 +43,8 @@ public class GameInfo extends JPanel
         
         g.setColor(Color.white);
         g.setFont(new Font("Arial", 1, 25));
-        g.drawString("Health: ?????", (height / 2) - 50, height / 5);
-        g.drawString("FirePower: " + game.ship.shipLevel, (height / 2) - 50, (height / 5) * 2);
-        g.drawString("Score: " + game.gameScore, (height / 2) - 50, (height / 5) * 3);
+        g.drawString("Health: " + game.lives, (height / 2) - 50, height / 5);
+        g.drawString("Ship Level: " + game.ship.shipLevel, (height / 2) - 50, (height / 5) * 2);
         
         repaint();
     }

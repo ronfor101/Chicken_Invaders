@@ -19,8 +19,12 @@ public class GameManager extends JPanel
     public java.io.ObjectInputStream objectInputStream;
     
     ClientThread clientThread;
+    boolean mpSentScore;
+    boolean mpState;
+    public boolean mpStart;
+    public boolean mpOppDead;
     public BufferedImage gameScreen;
-    public Data enemyData;
+    public int oppScore;
     public int player;
     ///////////////////////////////////////////////////////////////
     
@@ -45,19 +49,24 @@ public class GameManager extends JPanel
     boolean shipImmun;
     boolean showWave;
     int wave;
-    int lives;
+    public int lives;
     ////////////////////////////////////////////////////////////////
     
     public GameManager(GameFrame frame, boolean mpState)
     {
+        mpSentScore = false;
+        mpOppDead = false;
+        mpStart = true;
+        this.mpState = mpState;
         //If the game is multiplayer then connect to server
-        if (mpState) 
+        if (this.mpState) 
         {
-            enemyData = new Data(this,0);
             player = 0;
+            mpStart = false;
             this.clientThread = new ClientThread(this);
             this.Connect();
             this.clientThread.start();
+            send("ready");
         }
         
         //init game panel
@@ -108,12 +117,34 @@ public class GameManager extends JPanel
                 }
                 else
                 {
-                    ship.isAlive = true;
-                    hideMouseCursor();
-                    spawnInvaders();
-                    mouseStartingPosition();
-                    gameScore = 0;
-                    gameActive = true;
+                    if (mpState) 
+                    {
+                        if (mpOppDead) 
+                        {
+                            ship.isAlive = true;
+                            hideMouseCursor();
+                            spawnInvaders();
+                            mouseStartingPosition();
+                            gameScore = 0;
+                            gameActive = true;
+
+                            mpSentScore = false;
+                            mpOppDead = false;
+                            mpStart = false;
+                            showWave = true;
+                            waveTimeGathered = System.currentTimeMillis();
+                            send("ready");
+                        }
+                    }
+                    else
+                    {
+                        ship.isAlive = true;
+                        hideMouseCursor();
+                        spawnInvaders();
+                        mouseStartingPosition();
+                        gameScore = 0;
+                        gameActive = true;
+                    }
                 }
             }
         });
@@ -203,7 +234,7 @@ public class GameManager extends JPanel
                 }
             }
             
-            if (invaders.size() == 0) 
+            if (invaders.isEmpty()) 
             {
                 wave++;
                 showWave = true;
@@ -213,15 +244,15 @@ public class GameManager extends JPanel
                 invadersProjectiles.clear();
                 invaders.clear();
                 upgradeDrops.clear();
-                ship.shipLevel = 1;
+                if (ship.shipLevel > 1) 
+                {
+                    ship.shipLevel--;
+                }
                 spawnInvaders();
             }
         }
         else if (!gameActive)
         {
-            g.setColor(Color.white);
-            g.setFont(new Font("Arial", 1, 100));
-            
             for (int i = 0; i < invaders.size(); i++) 
             {
                 invaders.get(i).isAlive = false;
@@ -236,18 +267,65 @@ public class GameManager extends JPanel
             lives = 3;
             
             showMouseCursor();
-            g.drawString("Game Over!", 230, 150);
-            g.setFont(new Font("Arial", 1, 50));
-            g.drawString("Score: " + gameScore, 390, (height / 2) - 60);
+            
+            if (mpState) 
+            {
+                g.setColor(Color.white);
+                g.setFont(new Font("Arial", 1, 50));
+                g.drawString("Your Score: " + gameScore, 310, (height / 2) - 60);
+                
+                if (mpOppDead) 
+                {
+                    g.drawString("Opponent's Score: " + oppScore, 230, (height / 2));
+                    if (gameScore > oppScore) 
+                    {
+                        g.setFont(new Font("Arial", 1, 100));
+                        g.drawString("You Won!!!", 230, 150);
+                        
+                    }
+                    else
+                    {
+                        g.setFont(new Font("Arial", 1, 100));
+                        g.drawString("You Lost :(", 230, 150);
+                    }
+                }
+                else
+                {
+                    g.setFont(new Font("Arial", 1, 100));
+                    g.drawString("Game Over!", 230, 150);
+                    
+                    g.setFont(new Font("Arial", 1, 50));
+                    g.drawString("Opponent Still Alive", 280, (height / 2));
+                }
+            }
+            else
+            {
+                g.setFont(new Font("Arial", 1, 100));
+                g.drawString("Game Over!", 230, 150);
+                
+                g.setFont(new Font("Arial", 1, 50));
+                g.drawString("Score: " + gameScore, 390, (height / 2) - 60);
+            }
+            
             g.setFont(new Font("Arial", 1, 25));
             g.drawString("Click Left Mouse Button To Restart", 300, 650);
+            
+            if (mpState && !mpSentScore) 
+            {
+                send(new Data(this));
+                mpSentScore = true;
+            }
         }
         else if (showWave) 
         {
             g.setColor(Color.white);
             g.setFont(new Font("Arial", 1, 100));
             g.drawString("Wave " + wave, 330, height / 2);
-            
+            if (!mpStart) 
+            {
+                shipImmuTimeGathered = System.currentTimeMillis();
+                waveTimeGathered = System.currentTimeMillis();
+            }
             if (cooldownOver(waveTimeGathered, 2000)) 
             {
                 showWave = false;

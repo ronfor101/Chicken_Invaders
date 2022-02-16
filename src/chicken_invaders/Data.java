@@ -10,26 +10,16 @@ public class Data implements Serializable
     private static final long serialVersionUID = 1L;
     
     public int player;
-    public ImageIcon screen = new ImageIcon();
-    int score;
-    //State 1 is update image
-    //State 2 is send score
-    int state;
+    public int score;
     
-    public Data(GameManager gm, int givenState)
+    public Data(GameManager gm)
     {
-        this.state = givenState;
         this.player = gm.player;
         this.score = gm.gameScore;
-        
-        if (gm.gameScreen != null) 
-        {
-            this.screen = new ImageIcon(gm.gameScreen);
-        }
     }
     
     public String toString()
     {
-        return (state + " : " + player + " : " + score);
+        return (player + " : " + score);
     }
 }

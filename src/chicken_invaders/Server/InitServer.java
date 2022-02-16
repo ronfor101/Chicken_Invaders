@@ -1,7 +1,11 @@
 package chicken_invaders.Server;
 
-public class InitServer extends java.util.Observable {
-    public static void main(String[] args) {
+public class InitServer extends java.util.Observable 
+{
+    public int readyCount = 0;
+    
+    public static void main(String[] args) 
+    {
         int port = 25565;
         new InitServer().handleClients(port);
     }

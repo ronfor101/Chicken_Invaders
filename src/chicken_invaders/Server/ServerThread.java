@@ -35,7 +35,18 @@ public class ServerThread extends Thread implements java.util.Observer
                 {
                     Data temp = (Data)obj;
                     server.update(temp);
-                    System.out.println("Got" + temp.toString());
+                    System.out.println("Got: " + temp.toString());
+                }
+                
+                if (obj instanceof String) 
+                {
+                    server.readyCount++;
+                        
+                    if (server.readyCount == 2) 
+                    {
+                        server.update("Start");
+                        server.readyCount = 0;
+                    }
                 }
             }
         }
