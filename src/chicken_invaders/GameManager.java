@@ -6,6 +6,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
@@ -42,10 +43,14 @@ public class GameManager extends JPanel
     //ship components
     public SpaceShip ship;
     ArrayList<ShipProjectile> projectiles;
+    long projTimeGathered;
     ArrayList<UpgradeDrop> upgradeDrops;
     
     //invaders components
     long invMovementTimeGathered;
+    long eggSpawnTimeGathered;
+    Random rnd;
+    int eggCooldown;
     ArrayList<Invaders> invaders;
     ArrayList<InvaderProjectile> invadersProjectiles;
     
@@ -63,6 +68,7 @@ public class GameManager extends JPanel
     
     public GameManager(GameFrame frame, boolean mpState)
     {
+        eggCooldown = 3000;
         mpSentScore = false;
         mpOppDead = false;
         mpStart = true;
@@ -90,11 +96,15 @@ public class GameManager extends JPanel
         ship = new SpaceShip(this);
         projectiles = new ArrayList<ShipProjectile>();
         upgradeDrops = new ArrayList<UpgradeDrop>();
+        projTimeGathered = System.currentTimeMillis();
         
         //invader info and components
+        rnd = new Random();
+        
         invaders = new ArrayList<Invaders>();
         invadersProjectiles = new ArrayList<InvaderProjectile>();
         invMovementTimeGathered = System.currentTimeMillis();
+        eggSpawnTimeGathered = System.currentTimeMillis();
         
         //Ship life and immunity
         lives = 3;
@@ -116,6 +126,7 @@ public class GameManager extends JPanel
             { 
                 if (gameActive) 
                 {
+                    hideMouseCursor();
                     if (ship.shipLevel == 1) 
                     {
                         projectiles.add(new ShipProjectile(gamePanel, ship.x, ship.y));
@@ -130,6 +141,21 @@ public class GameManager extends JPanel
                         projectiles.add(new ShipProjectile(gamePanel, ship.x, ship.y - 10));
                         projectiles.add(new ShipProjectile(gamePanel, ship.x - 20, ship.y));
                         projectiles.add(new ShipProjectile(gamePanel, ship.x + 20, ship.y));
+                    }
+                    else if (ship.shipLevel == 4) 
+                    {
+                        projectiles.add(new ShipProjectile(gamePanel, ship.x - 10, ship.y - 10));
+                        projectiles.add(new ShipProjectile(gamePanel, ship.x + 10, ship.y - 10));
+                        projectiles.add(new ShipProjectile(gamePanel, ship.x - 30, ship.y + 10));
+                        projectiles.add(new ShipProjectile(gamePanel, ship.x + 30, ship.y + 10));
+                    }
+                    else if (ship.shipLevel == 5) 
+                    {
+                        projectiles.add(new ShipProjectile(gamePanel, ship.x, ship.y - 10));
+                        projectiles.add(new ShipProjectile(gamePanel, ship.x - 15, ship.y));
+                        projectiles.add(new ShipProjectile(gamePanel, ship.x + 15, ship.y));
+                        projectiles.add(new ShipProjectile(gamePanel, ship.x - 30, ship.y + 15));
+                        projectiles.add(new ShipProjectile(gamePanel, ship.x + 30, ship.y + 15));
                     }
                     
                 }
@@ -186,6 +212,13 @@ public class GameManager extends JPanel
             g.drawString("Score: " + gameScore, 5, 20);
             g.drawString("Health: " + lives, 5, 655);
             hit();
+            
+            //Spawn Eggs From The Chickens
+            if (cooldownOver(eggSpawnTimeGathered, eggCooldown)) 
+            {
+                invaders.get(rnd.nextInt(invaders.size())).spawnEgg();
+                eggSpawnTimeGathered = System.currentTimeMillis();
+            }
             
             //Draws The Invaders Projectiles
             for (int i = 0; i < invadersProjectiles.size(); i++) 
@@ -262,6 +295,17 @@ public class GameManager extends JPanel
                 invMovementTimeGathered = System.currentTimeMillis();
             }
             
+            //move ship projectiles in sync
+            if (cooldownOver(projTimeGathered, 10)) 
+            {
+                for (int i = 0; i < projectiles.size(); i++) 
+                {
+                    ShipProjectile temp = projectiles.get(i);
+                    temp.moveProjectile();
+                }
+                projTimeGathered = System.currentTimeMillis();
+            }
+            
             //Check Ship Immunity cooldown (When to turn off the immunity)
             if (shipImmun) 
             {
@@ -276,12 +320,18 @@ public class GameManager extends JPanel
             {
                 wave++;
                 showWave = true;
+                shipImmuTimeGathered = System.currentTimeMillis();
                 waveTimeGathered = System.currentTimeMillis();
                 
-                projectiles.clear();
-                invadersProjectiles.clear();
-                invaders.clear();
-                upgradeDrops.clear();
+                if (eggCooldown > 600) 
+                {
+                    eggCooldown -= 200;
+                }     
+                
+                projectiles = new ArrayList<ShipProjectile>();
+                invadersProjectiles = new ArrayList<InvaderProjectile>();
+                invaders = new ArrayList<Invaders>();
+                upgradeDrops = new ArrayList<UpgradeDrop>();
                 if (ship.shipLevel > 1) 
                 {
                     ship.shipLevel--;
@@ -291,15 +341,10 @@ public class GameManager extends JPanel
         }
         else if (!gameActive)
         {
-            for (int i = 0; i < invaders.size(); i++) 
-            {
-                invaders.get(i).isAlive = false;
-            }
-            
-            projectiles.clear();
-            invadersProjectiles.clear();
-            invaders.clear();
-            upgradeDrops.clear();
+            invaders = new ArrayList<Invaders>();
+            projectiles = new ArrayList<ShipProjectile>();
+            invadersProjectiles = new ArrayList<InvaderProjectile>();
+            upgradeDrops = new ArrayList<UpgradeDrop>();
             
             showMouseCursor();
             
@@ -466,7 +511,7 @@ public class GameManager extends JPanel
             currentDrop = upgradeDrops.get(j);
             if (ship.x < currentDrop.x + currentDrop.size && ship.x + ship.size > currentDrop.x && ship.y < currentDrop.y + currentDrop.size && ship.size + ship.y > currentDrop.y) 
             {
-                if (ship.shipLevel < 3) 
+                if (ship.shipLevel < 5) 
                 {
                     ship.shipLevel++;
                 }

@@ -76,6 +76,11 @@ public class Invaders extends Thread
         }
     }
     
+    public void spawnEgg()
+    {
+        gamePanel.invadersProjectiles.add(new InvaderProjectile(gamePanel, x, y));
+    }
+    
     public void drawInvader(Graphics g)
     {
         if (health == 1) {g.drawImage(redInvImage, x, y, size, size, null);}
@@ -93,11 +98,6 @@ public class Invaders extends Thread
         {
             try
             {
-                if (rnd.nextInt(5000) == 555) 
-                {
-                    gamePanel.invadersProjectiles.add(new InvaderProjectile(gamePanel, x, y));
-                }
-            
                 gamePanel.repaint();
                 Thread.sleep(10);
             }

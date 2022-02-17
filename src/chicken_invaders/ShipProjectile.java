@@ -22,6 +22,11 @@ public class ShipProjectile extends Thread
         start();
     }
     
+    public void moveProjectile()
+    {
+        y = y - 5;
+    }
+    
     public void drawProjectile(Graphics g, int level)
     {
         g.drawImage(projectileImage, x, y, size,size + 40,null);
@@ -36,7 +41,7 @@ public class ShipProjectile extends Thread
                 Thread.sleep(10);
             }
             catch (InterruptedException e) {}
-            y = y - 5;
+            
             if (y < 0) 
             {
                 isAlive = false;
