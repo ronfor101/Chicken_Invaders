@@ -43,6 +43,7 @@ public class GameManager extends JPanel
     //ship components
     public SpaceShip ship;
     ArrayList<ShipProjectile> projectiles;
+    long projFiredTimeGathered;
     long projTimeGathered;
     ArrayList<UpgradeDrop> upgradeDrops;
     
@@ -106,6 +107,7 @@ public class GameManager extends JPanel
         invMovementTimeGathered = System.currentTimeMillis();
         eggSpawnTimeGathered = System.currentTimeMillis();
         
+        
         //Ship life and immunity
         lives = 3;
         shipImmun = true;
@@ -126,38 +128,41 @@ public class GameManager extends JPanel
             { 
                 if (gameActive) 
                 {
-                    hideMouseCursor();
-                    if (ship.shipLevel == 1) 
+                    if (cooldownOver(projFiredTimeGathered, 300)) 
                     {
-                        projectiles.add(new ShipProjectile(gamePanel, ship.x, ship.y));
+                        hideMouseCursor();
+                        if (ship.shipLevel == 1) 
+                        {
+                            projectiles.add(new ShipProjectile(gamePanel, ship.x, ship.y));
+                        }
+                        else if (ship.shipLevel == 2) 
+                        {
+                            projectiles.add(new ShipProjectile(gamePanel, ship.x - 10, ship.y));
+                            projectiles.add(new ShipProjectile(gamePanel, ship.x + 10, ship.y));
+                        }
+                        else if (ship.shipLevel == 3) 
+                        {
+                            projectiles.add(new ShipProjectile(gamePanel, ship.x, ship.y - 10));
+                            projectiles.add(new ShipProjectile(gamePanel, ship.x - 20, ship.y));
+                            projectiles.add(new ShipProjectile(gamePanel, ship.x + 20, ship.y));
+                        }
+                        else if (ship.shipLevel == 4) 
+                        {
+                            projectiles.add(new ShipProjectile(gamePanel, ship.x - 10, ship.y - 10));
+                            projectiles.add(new ShipProjectile(gamePanel, ship.x + 10, ship.y - 10));
+                            projectiles.add(new ShipProjectile(gamePanel, ship.x - 30, ship.y + 10));
+                            projectiles.add(new ShipProjectile(gamePanel, ship.x + 30, ship.y + 10));
+                        }
+                        else if (ship.shipLevel == 5) 
+                        {
+                            projectiles.add(new ShipProjectile(gamePanel, ship.x, ship.y - 10));
+                            projectiles.add(new ShipProjectile(gamePanel, ship.x - 15, ship.y));
+                            projectiles.add(new ShipProjectile(gamePanel, ship.x + 15, ship.y));
+                            projectiles.add(new ShipProjectile(gamePanel, ship.x - 30, ship.y + 15));
+                            projectiles.add(new ShipProjectile(gamePanel, ship.x + 30, ship.y + 15));
+                        }
+                        projFiredTimeGathered = System.currentTimeMillis();
                     }
-                    else if (ship.shipLevel == 2) 
-                    {
-                        projectiles.add(new ShipProjectile(gamePanel, ship.x - 10, ship.y));
-                        projectiles.add(new ShipProjectile(gamePanel, ship.x + 10, ship.y));
-                    }
-                    else if (ship.shipLevel == 3) 
-                    {
-                        projectiles.add(new ShipProjectile(gamePanel, ship.x, ship.y - 10));
-                        projectiles.add(new ShipProjectile(gamePanel, ship.x - 20, ship.y));
-                        projectiles.add(new ShipProjectile(gamePanel, ship.x + 20, ship.y));
-                    }
-                    else if (ship.shipLevel == 4) 
-                    {
-                        projectiles.add(new ShipProjectile(gamePanel, ship.x - 10, ship.y - 10));
-                        projectiles.add(new ShipProjectile(gamePanel, ship.x + 10, ship.y - 10));
-                        projectiles.add(new ShipProjectile(gamePanel, ship.x - 30, ship.y + 10));
-                        projectiles.add(new ShipProjectile(gamePanel, ship.x + 30, ship.y + 10));
-                    }
-                    else if (ship.shipLevel == 5) 
-                    {
-                        projectiles.add(new ShipProjectile(gamePanel, ship.x, ship.y - 10));
-                        projectiles.add(new ShipProjectile(gamePanel, ship.x - 15, ship.y));
-                        projectiles.add(new ShipProjectile(gamePanel, ship.x + 15, ship.y));
-                        projectiles.add(new ShipProjectile(gamePanel, ship.x - 30, ship.y + 15));
-                        projectiles.add(new ShipProjectile(gamePanel, ship.x + 30, ship.y + 15));
-                    }
-                    
                 }
                 else
                 {
