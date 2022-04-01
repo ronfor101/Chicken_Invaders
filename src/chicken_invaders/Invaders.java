@@ -70,7 +70,7 @@ public class Invaders extends Thread
 
     public void spawnUpgrade()
     {
-        if (rnd.nextInt(20) == 1) 
+        if (rnd.nextInt(16) == 1) 
         {
             gamePanel.upgradeDrops.add(new UpgradeDrop(gamePanel, x, y));
         }

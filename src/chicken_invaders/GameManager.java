@@ -278,14 +278,17 @@ public class GameManager extends JPanel
             }
             
             //Draw the hearts
-            for (int i = 0; i < lives; i++) 
+            if (!mpState) 
             {
-                g.drawImage(heart, i * 25, height - 70, 25, 25, null);
-            }
+                for (int i = 0; i < lives; i++) 
+                {
+                    g.drawImage(heart, i * 25, height - 70, 25, 25, null);
+                }
 
-            for (int i = 0; i < (3 - lives); i++) 
-            {
-                g.drawImage(emptyHeart, (lives + i) * 25, height - 70, 25, 25, null);
+                for (int i = 0; i < (3 - lives); i++) 
+                {
+                    g.drawImage(emptyHeart, (lives + i) * 25, height - 70, 25, 25, null);
+                }
             }
             
             //move chickens side to side
