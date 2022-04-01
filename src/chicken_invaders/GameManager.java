@@ -36,6 +36,8 @@ public class GameManager extends JPanel
     public int gameScore;
     GameManager gamePanel = this;
     Image backgroundImage;
+    Image heart;
+    Image emptyHeart;
     static GameFrame mainFrame;
     int width;
     int height;
@@ -46,6 +48,7 @@ public class GameManager extends JPanel
     long projFiredTimeGathered;
     long projTimeGathered;
     ArrayList<UpgradeDrop> upgradeDrops;
+    boolean isShooting;
     
     //invaders components
     long invMovementTimeGathered;
@@ -69,6 +72,7 @@ public class GameManager extends JPanel
     
     public GameManager(GameFrame frame, boolean mpState)
     {
+        isShooting = false;
         eggCooldown = 3000;
         mpSentScore = false;
         mpOppDead = false;
@@ -92,6 +96,8 @@ public class GameManager extends JPanel
         width = 1024;
         height = 700;
         backgroundImage = (new ImageIcon("Background.jpg")).getImage();
+        heart = (new ImageIcon("Heart.png")).getImage();
+        emptyHeart = (new ImageIcon("EmptyHeart.png")).getImage();
         
         //ship info and components
         ship = new SpaceShip(this);
@@ -124,45 +130,23 @@ public class GameManager extends JPanel
         addMouseMotionListener(new MouseMovement());
         addMouseListener(new MouseAdapter() 
         { 
-            public void mousePressed(MouseEvent me) 
-            { 
+            public void mouseReleased(MouseEvent me)
+            {
                 if (gameActive) 
                 {
-                    if (cooldownOver(projFiredTimeGathered, 300)) 
-                    {
-                        hideMouseCursor();
-                        if (ship.shipLevel == 1) 
-                        {
-                            projectiles.add(new ShipProjectile(gamePanel, ship.x, ship.y));
-                        }
-                        else if (ship.shipLevel == 2) 
-                        {
-                            projectiles.add(new ShipProjectile(gamePanel, ship.x - 10, ship.y));
-                            projectiles.add(new ShipProjectile(gamePanel, ship.x + 10, ship.y));
-                        }
-                        else if (ship.shipLevel == 3) 
-                        {
-                            projectiles.add(new ShipProjectile(gamePanel, ship.x, ship.y - 10));
-                            projectiles.add(new ShipProjectile(gamePanel, ship.x - 20, ship.y));
-                            projectiles.add(new ShipProjectile(gamePanel, ship.x + 20, ship.y));
-                        }
-                        else if (ship.shipLevel == 4) 
-                        {
-                            projectiles.add(new ShipProjectile(gamePanel, ship.x - 10, ship.y - 10));
-                            projectiles.add(new ShipProjectile(gamePanel, ship.x + 10, ship.y - 10));
-                            projectiles.add(new ShipProjectile(gamePanel, ship.x - 30, ship.y + 10));
-                            projectiles.add(new ShipProjectile(gamePanel, ship.x + 30, ship.y + 10));
-                        }
-                        else if (ship.shipLevel == 5) 
-                        {
-                            projectiles.add(new ShipProjectile(gamePanel, ship.x, ship.y - 10));
-                            projectiles.add(new ShipProjectile(gamePanel, ship.x - 15, ship.y));
-                            projectiles.add(new ShipProjectile(gamePanel, ship.x + 15, ship.y));
-                            projectiles.add(new ShipProjectile(gamePanel, ship.x - 30, ship.y + 15));
-                            projectiles.add(new ShipProjectile(gamePanel, ship.x + 30, ship.y + 15));
-                        }
-                        projFiredTimeGathered = System.currentTimeMillis();
-                    }
+                    isShooting = false;
+                }
+            }
+            
+            public void mousePressed(MouseEvent me) 
+            { 
+//                if ((me.getModifiers() & InputEvent.BUTTON2_MASK) != 0) 
+//                {
+//                    System.out.println("middle" + (me.getPoint()));
+//                }
+                if (gameActive) 
+                {
+                    isShooting = true;
                 }
                 else
                 {
@@ -215,9 +199,13 @@ public class GameManager extends JPanel
         if (gameActive && !showWave) 
         {
             g.drawString("Score: " + gameScore, 5, 20);
-            g.drawString("Health: " + lives, 5, 655);
+            //g.drawString("Health: " + lives, 5, 655);
             hit();
             
+            if (isShooting) 
+            {
+                Shoot();
+            }
             //Spawn Eggs From The Chickens
             if (cooldownOver(eggSpawnTimeGathered, eggCooldown)) 
             {
@@ -287,6 +275,17 @@ public class GameManager extends JPanel
             if (ship.isAlive) 
             {
                 ship.drawShip(g);
+            }
+            
+            //Draw the hearts
+            for (int i = 0; i < lives; i++) 
+            {
+                g.drawImage(heart, i * 25, height - 70, 25, 25, null);
+            }
+
+            for (int i = 0; i < (3 - lives); i++) 
+            {
+                g.drawImage(emptyHeart, (lives + i) * 25, height - 70, 25, 25, null);
             }
             
             //move chickens side to side
@@ -620,13 +619,42 @@ public class GameManager extends JPanel
         }
     }
     
-    public void screenShot() {
-        try {
-            Point p = getLocationOnScreen();
-            Dimension dim = new Dimension(1024, 700);
-            Rectangle rect = new Rectangle(p, dim);
-            gameScreen = (new Robot()).createScreenCapture(rect);
+    public void Shoot() 
+    {
+        if (cooldownOver(projFiredTimeGathered, 400)) 
+        {
+            hideMouseCursor();
+            if (ship.shipLevel == 1) 
+            {
+                projectiles.add(new ShipProjectile(gamePanel, ship.x, ship.y));
+            }
+            else if (ship.shipLevel == 2) 
+            {
+                projectiles.add(new ShipProjectile(gamePanel, ship.x - 10, ship.y));
+                projectiles.add(new ShipProjectile(gamePanel, ship.x + 10, ship.y));
+            }
+            else if (ship.shipLevel == 3) 
+            {
+                projectiles.add(new ShipProjectile(gamePanel, ship.x, ship.y - 10));
+                projectiles.add(new ShipProjectile(gamePanel, ship.x - 20, ship.y));
+                projectiles.add(new ShipProjectile(gamePanel, ship.x + 20, ship.y));
+            }
+            else if (ship.shipLevel == 4) 
+            {
+                projectiles.add(new ShipProjectile(gamePanel, ship.x - 10, ship.y - 10));
+                projectiles.add(new ShipProjectile(gamePanel, ship.x + 10, ship.y - 10));
+                projectiles.add(new ShipProjectile(gamePanel, ship.x - 30, ship.y + 10));
+                projectiles.add(new ShipProjectile(gamePanel, ship.x + 30, ship.y + 10));
+            }
+            else if (ship.shipLevel == 5) 
+            {
+                projectiles.add(new ShipProjectile(gamePanel, ship.x, ship.y - 10));
+                projectiles.add(new ShipProjectile(gamePanel, ship.x - 15, ship.y));
+                projectiles.add(new ShipProjectile(gamePanel, ship.x + 15, ship.y));
+                projectiles.add(new ShipProjectile(gamePanel, ship.x - 30, ship.y + 15));
+                projectiles.add(new ShipProjectile(gamePanel, ship.x + 30, ship.y + 15));
+            }
+            projFiredTimeGathered = System.currentTimeMillis();
         }
-        catch (Exception e) { }
     }
 }
