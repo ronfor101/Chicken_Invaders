@@ -352,6 +352,7 @@ public class GameManager extends JPanel
             projectiles = new ArrayList<ShipProjectile>();
             invadersProjectiles = new ArrayList<InvaderProjectile>();
             upgradeDrops = new ArrayList<UpgradeDrop>();
+            wave = 1;
             
             showMouseCursor();
             
